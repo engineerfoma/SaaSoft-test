@@ -6,19 +6,19 @@ export const useAccountsStore = defineStore('accounts', () => {
   const accounts = ref<Account[]>([])
 
   const loadAccounts = () => {
-    const saved = localStorage.getItem('accounts')
+    const saved = sessionStorage.getItem('accounts')
     if (saved) {
       try {
         accounts.value = JSON.parse(saved)
       } catch (error) {
-        console.error('Error loading accounts from localStorage:', error)
+        console.error('Error loading accounts from sessionStorage:', error)
         accounts.value = []
       }
     }
   }
 
   const saveAccounts = () => {
-    localStorage.setItem('accounts', JSON.stringify(accounts.value))
+    sessionStorage.setItem('accounts', JSON.stringify(accounts.value))
   }
 
   const createAccount = (): Account => {
