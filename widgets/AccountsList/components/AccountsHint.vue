@@ -10,8 +10,7 @@
 <script setup lang="ts">
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .uk-alert-info {
     background-color: var(--bg-info);

@@ -7,6 +7,9 @@
   --danger-color: #f0506e;
   --danger-hover: #721c24;
   --danger-bg: #f8d7da;
+  --error-border: #f0506e;
+  --error-bg: #fef2f2;
+  --error-shadow: 0 0 0 2px rgba(240, 80, 110, 0.1);
   
   --text-primary: #333;
   --text-secondary: #666;
@@ -23,6 +26,8 @@
   
   --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
   --shadow-focus: 0 0 0 2px rgba(30, 135, 240, 0.1);
+  --shadow-black-light: rgba(0, 0, 0, 0.1);
+  --shadow-primary-light: rgba(30, 135, 240, 0.1);
   
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;

@@ -13,10 +13,5 @@
 <script setup lang="ts">
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
-
-.uk-text-muted {
-    font-size: var(--font-sm);
-}
+<style lang="scss" scoped>
 </style>

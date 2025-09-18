@@ -80,8 +80,7 @@ const handleTogglePasswordVisibility = (accountId: string) => {
 }
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .accounts-list {
     max-width: 1200px;
@@ -89,38 +88,6 @@ const handleTogglePasswordVisibility = (accountId: string) => {
     padding: var(--spacing-lg);
 }
 
-.uk-button-primary {
-    background-color: var(--primary-color);
-    color: white;
-    padding: var(--spacing-sm);
-}
-
-.uk-button-primary:hover {
-    background-color: var(--primary-hover);
-    color: white;
-}
-
-.uk-alert-info {
-    background-color: var(--bg-info);
-    border-left: 4px solid var(--border-info);
-    color: var(--primary-color);
-    font-size: var(--font-sm);
-    padding: var(--spacing-lg);
-}
-
-.uk-heading-small {
-    color: var(--text-primary);
-    font-size: var(--font-lg);
-    font-weight: 600;
-}
-
-.uk-text-muted {
-    font-size: var(--font-sm);
-}
-
-.uk-text-small {
-    font-size: var(--font-xs);
-}
 
 .accounts-table-container {
     background: var(--bg-primary);
@@ -133,29 +100,31 @@ const handleTogglePasswordVisibility = (accountId: string) => {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
+
+    thead {
+        background-color: var(--bg-secondary);
+    }
+
+    th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border-medium);
+        font-size: var(--font-sm);
+    }
+
+    td {
+        padding: 8px 16px;
+        border-bottom: 1px solid var(--border-medium);
+        vertical-align: middle;
+    }
 }
 
-.accounts-table thead {
-    background-color: var(--bg-secondary);
-}
-
-.accounts-table th {
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    color: var(--text-primary);
-    border-bottom: 2px solid var(--border-medium);
-    font-size: var(--font-sm);
-}
-
-.accounts-table td {
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--border-medium);
-    vertical-align: middle;
-}
-
-.account-row:hover {
-    background-color: var(--bg-secondary);
+.account-row {
+    &:hover {
+        background-color: var(--bg-secondary);
+    }
 }
 
 .width-30 {
@@ -171,76 +140,6 @@ const handleTogglePasswordVisibility = (accountId: string) => {
     text-align: center;
 }
 
-.table-input,
-.table-select {
-    width: 100%;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    font-size: var(--font-sm);
-    background: var(--bg-primary);
-    transition: border-color var(--transition-fast);
-}
-
-.table-input:focus,
-.table-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-focus);
-}
-
-.table-input::placeholder {
-    color: var(--text-muted);
-}
-
-.password-input-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.password-input {
-    padding-right: 40px;
-}
-
-.password-toggle {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-sm);
-    transition: color var(--transition-fast);
-}
-
-.password-toggle:hover {
-    color: var(--primary-color);
-}
-
-.delete-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    color: var(--danger-color);
-    border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.delete-button:hover {
-    background-color: var(--danger-bg);
-    color: var(--danger-hover);
-}
 
 @media (max-width: 768px) {
     .accounts-table-container {
@@ -249,12 +148,6 @@ const handleTogglePasswordVisibility = (accountId: string) => {
 
     .accounts-table {
         min-width: 600px;
-    }
-
-    .table-input,
-    .table-select {
-        font-size: var(--font-xs);
-        padding: 6px 10px;
     }
 }
 </style>

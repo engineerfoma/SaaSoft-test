@@ -3,10 +3,11 @@
         <input
             :value="value"
             :type="isVisible ? 'text' : 'password'"
-            class="uk-input table-input password-input"
+            :class="['uk-input', 'table-input', 'password-input', { 'error': hasError }]"
             maxlength="100"
             placeholder="Значение"
             @input="handleInput"
+            @blur="handleBlur"
         />
         <button
             type="button"
@@ -29,11 +30,13 @@
 interface Props {
     value: string
     isVisible: boolean
+    hasError?: boolean
 }
 
 interface Emits {
     (e: 'input', value: string): void
     (e: 'toggle-visibility'): void
+    (e: 'blur'): void
 }
 
 const props = defineProps<Props>()
@@ -47,10 +50,13 @@ const handleInput = (event: Event) => {
 const handleToggleVisibility = () => {
     emit('toggle-visibility')
 }
+
+const handleBlur = () => {
+    emit('blur')
+}
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .table-input {
     width: 100%;
@@ -60,26 +66,36 @@ const handleToggleVisibility = () => {
     font-size: var(--font-sm);
     background: var(--bg-primary);
     transition: border-color var(--transition-fast);
-}
 
-.table-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-focus);
-}
+    &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-focus);
+    }
 
-.table-input::placeholder {
-    color: var(--text-muted);
+    &.error {
+        border-color: var(--error-border);
+        background-color: var(--error-bg);
+
+        &:focus {
+            border-color: var(--error-border);
+            box-shadow: var(--error-shadow);
+        }
+    }
+
+    &::placeholder {
+        color: var(--text-muted);
+    }
 }
 
 .password-input-container {
     position: relative;
     display: flex;
     align-items: center;
-}
 
-.password-input {
-    padding-right: 40px;
+    .password-input {
+        padding-right: 40px;
+    }
 }
 
 .password-toggle {
@@ -97,9 +113,9 @@ const handleToggleVisibility = () => {
     justify-content: center;
     border-radius: var(--radius-sm);
     transition: color var(--transition-fast);
-}
 
-.password-toggle:hover {
-    color: var(--primary-color);
+    &:hover {
+        color: var(--primary-color);
+    }
 }
 </style>

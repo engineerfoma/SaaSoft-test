@@ -1,21 +1,24 @@
 <template>
     <input
         :value="value"
-        class="uk-input table-input"
+        :class="['uk-input', 'table-input', { 'error': hasError }]"
         type="text"
         maxlength="100"
         placeholder="Значение"
         @input="handleInput"
+        @blur="handleBlur"
     />
 </template>
 
 <script setup lang="ts">
 interface Props {
     value: string
+    hasError?: boolean
 }
 
 interface Emits {
     (e: 'input', value: string): void
+    (e: 'blur'): void
 }
 
 const props = defineProps<Props>()
@@ -25,10 +28,13 @@ const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement
     emit('input', target.value)
 }
+
+const handleBlur = () => {
+    emit('blur')
+}
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .table-input {
     width: 100%;
@@ -38,15 +44,25 @@ const handleInput = (event: Event) => {
     font-size: var(--font-sm);
     background: var(--bg-primary);
     transition: border-color var(--transition-fast);
-}
 
-.table-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-focus);
-}
+    &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-focus);
+    }
 
-.table-input::placeholder {
-    color: var(--text-muted);
+    &.error {
+        border-color: var(--error-border);
+        background-color: var(--error-bg);
+
+        &:focus {
+            border-color: var(--error-border);
+            box-shadow: var(--error-shadow);
+        }
+    }
+
+    &::placeholder {
+        color: var(--text-muted);
+    }
 }
 </style>

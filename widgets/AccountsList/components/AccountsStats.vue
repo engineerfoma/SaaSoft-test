@@ -12,8 +12,7 @@ interface Props {
 defineProps<Props>()
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .uk-text-muted {
     font-size: var(--font-sm);

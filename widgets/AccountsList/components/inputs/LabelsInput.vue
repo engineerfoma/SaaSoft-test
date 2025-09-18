@@ -6,6 +6,7 @@
         maxlength="50"
         placeholder="Значение"
         @input="handleInput"
+        @blur="handleBlur"
     />
 </template>
 
@@ -16,6 +17,7 @@ interface Props {
 
 interface Emits {
     (e: 'input', value: string): void
+    (e: 'blur'): void
 }
 
 const props = defineProps<Props>()
@@ -25,10 +27,13 @@ const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement
     emit('input', target.value)
 }
+
+const handleBlur = () => {
+    emit('blur')
+}
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .table-input {
     width: 100%;
@@ -38,15 +43,12 @@ const handleInput = (event: Event) => {
     font-size: var(--font-sm);
     background: var(--bg-primary);
     transition: border-color var(--transition-fast);
+
+    &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-focus);
+    }
 }
 
-.table-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-focus);
-}
-
-.table-input::placeholder {
-    color: var(--text-muted);
-}
 </style>

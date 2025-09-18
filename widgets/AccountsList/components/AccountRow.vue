@@ -1,11 +1,15 @@
 <template>
     <tr class="account-row">
-        <td colspan="5" class="account-row-content">
+        <td
+            colspan="5"
+            class="account-row-content"
+        >
             <div class="account-fields">
                 <div class="field-container tags-field">
                     <LabelsInput
                         :value="getAccountLabels(account)"
                         @input="value => handleLabelsChange(account.id, value)"
+                        @blur="() => handleFieldBlur(account.id, 'labels')"
                     />
                 </div>
                 <div class="field-container type-field">
@@ -15,13 +19,15 @@
                     />
                 </div>
                 <div class="field-container login-password-container">
-                    <div 
+                    <div
                         class="login-field"
                         :class="{ 'ldap-mode': getAccountType(account) === AccountType.LDAP }"
                     >
                         <LoginInput
                             :value="getAccountLogin(account)"
+                            :has-error="hasFieldError(account.id, 'login')"
                             @input="value => handleLoginChange(account.id, value)"
+                            @blur="() => handleFieldBlur(account.id, 'login')"
                         />
                     </div>
                     <div
@@ -31,7 +37,9 @@
                         <PasswordInput
                             :value="getAccountPassword(account)"
                             :is-visible="isPasswordVisible"
+                            :has-error="hasFieldError(account.id, 'password')"
                             @input="value => handlePasswordChange(account.id, value)"
+                            @blur="() => handleFieldBlur(account.id, 'password')"
                             @toggle-visibility="togglePasswordVisibility"
                         />
                     </div>
@@ -91,12 +99,18 @@ const getAccountPassword = (account: Account) => {
     return account.password || ''
 }
 
+const hasFieldError = (accountId: string, field: string) => {
+    return accountsStore.hasFieldError(accountId, field)
+}
+
 const handleLabelsChange = (accountId: string, value: string) => {
     emit('labels-change', accountId, value)
 }
 
 const handleTypeChange = (accountId: string, value: string) => {
     emit('type-change', accountId, value)
+    // Валидация при изменении селекта
+    accountsStore.validateAccountField(accountId, 'type')
 }
 
 const handleLoginChange = (accountId: string, value: string) => {
@@ -105,6 +119,12 @@ const handleLoginChange = (accountId: string, value: string) => {
 
 const handlePasswordChange = (accountId: string, value: string) => {
     emit('password-change', accountId, value)
+}
+
+const handleFieldBlur = (accountId: string, field: string) => {
+    if (field === 'login' || field === 'password') {
+        accountsStore.validateAccountField(accountId, field as keyof Account)
+    }
 }
 
 const handleDeleteAccount = (accountId: string) => {
@@ -116,11 +136,12 @@ const togglePasswordVisibility = () => {
 }
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
-.account-row:hover {
-    background-color: var(--bg-secondary);
+.account-row {
+    &:hover {
+        background-color: var(--bg-secondary);
+    }
 }
 
 .account-row-content {
@@ -141,43 +162,43 @@ const togglePasswordVisibility = () => {
     display: flex;
     align-items: center;
     min-width: 0;
-}
 
-.tags-field {
-    flex: 0 0 200px;
-    max-width: 200px;
-}
+    &.tags-field {
+        flex: 0 0 200px;
+        max-width: 200px;
+    }
 
-.type-field {
-    flex: 0 0 120px;
-    max-width: 120px;
-}
+    &.type-field {
+        flex: 0 0 120px;
+        max-width: 120px;
+    }
 
-.login-password-container {
-    flex: 2;
-    display: flex;
-    gap: 16px;
-    min-width: 0;
+    &.login-password-container {
+        flex: 2;
+        display: flex;
+        gap: 16px;
+        min-width: 0;
+    }
+
+    &.actions-field {
+        flex: 0 0 50px;
+        max-width: 50px;
+        justify-content: center;
+    }
 }
 
 .login-field {
     flex: 1;
     min-width: 0;
+
+    &.ldap-mode {
+        flex: 1;
+    }
 }
 
 .password-field {
     flex: 1;
     min-width: 0;
-}
-
-.actions-field {
-    flex: 0 0 50px;
-    max-width: 50px;
-    justify-content: center;
-}
-
-.login-field.ldap-mode {
-    flex: 1;
 }
 
 .delete-button {
@@ -191,11 +212,11 @@ const togglePasswordVisibility = () => {
     display: flex;
     align-items: center;
     justify-content: center;
-}
 
-.delete-button:hover {
-    background-color: var(--danger-bg);
-    color: var(--danger-hover);
+    &:hover {
+        background-color: var(--danger-bg);
+        color: var(--danger-hover);
+    }
 }
 
 @media (max-width: 768px) {

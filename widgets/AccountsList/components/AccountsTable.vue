@@ -84,8 +84,7 @@ const handleTogglePasswordVisibility = (accountId: string) => {
 }
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .accounts-table-container {
     background: var(--bg-primary);
@@ -98,25 +97,25 @@ const handleTogglePasswordVisibility = (accountId: string) => {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
-}
 
-.accounts-table thead {
-    background-color: var(--bg-secondary);
-}
+    thead {
+        background-color: var(--bg-secondary);
+    }
 
-.accounts-table th {
-    padding: 0;
-    text-align: left;
-    font-weight: 600;
-    color: var(--text-primary);
-    border-bottom: 2px solid var(--border-medium);
-    font-size: var(--font-sm);
-}
+    th {
+        padding: 0;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border-medium);
+        font-size: var(--font-sm);
+    }
 
-.accounts-table td {
-    padding: 0;
-    border-bottom: 1px solid var(--border-medium);
-    vertical-align: middle;
+    td {
+        padding: 0;
+        border-bottom: 1px solid var(--border-medium);
+        vertical-align: middle;
+    }
 }
 
 .table-header-content {
@@ -140,23 +139,29 @@ const handleTogglePasswordVisibility = (accountId: string) => {
     font-weight: 600;
     color: var(--text-primary);
     font-size: var(--font-sm);
-}
 
-.tags-header {
-    flex: 0 0 200px;
-    max-width: 200px;
-}
+    &.tags-header {
+        flex: 0 0 200px;
+        max-width: 200px;
+    }
 
-.type-header {
-    flex: 0 0 120px;
-    max-width: 120px;
-}
+    &.type-header {
+        flex: 0 0 120px;
+        max-width: 120px;
+    }
 
-.login-password-header {
-    flex: 2;
-    display: flex;
-    gap: 16px;
-    min-width: 0;
+    &.login-password-header {
+        flex: 2;
+        display: flex;
+        gap: 16px;
+        min-width: 0;
+    }
+
+    &.actions-header {
+        flex: 0 0 50px;
+        max-width: 50px;
+        justify-content: center;
+    }
 }
 
 .login-header {
@@ -167,12 +172,6 @@ const handleTogglePasswordVisibility = (accountId: string) => {
 .password-header {
     flex: 1;
     min-width: 0;
-}
-
-.actions-header {
-    flex: 0 0 50px;
-    max-width: 50px;
-    justify-content: center;
 }
 
 @media (max-width: 768px) {
@@ -189,28 +188,30 @@ const handleTogglePasswordVisibility = (accountId: string) => {
         padding: 10px 12px;
     }
     
-    .tags-header {
-        flex: 0 0 150px;
-        max-width: 150px;
-    }
-    
-    .type-header {
-        flex: 0 0 100px;
-        max-width: 100px;
-    }
-    
-    .login-password-header {
-        gap: 8px;
+    .header-field {
+        &.tags-header {
+            flex: 0 0 150px;
+            max-width: 150px;
+        }
+        
+        &.type-header {
+            flex: 0 0 100px;
+            max-width: 100px;
+        }
+        
+        &.login-password-header {
+            gap: 8px;
+        }
+        
+        &.actions-header {
+            flex: 0 0 40px;
+            max-width: 40px;
+        }
     }
     
     .login-header,
     .password-header {
         min-width: 0;
-    }
-    
-    .actions-header {
-        flex: 0 0 40px;
-        max-width: 40px;
     }
 }
 </style>

@@ -29,8 +29,7 @@ const handleChange = (event: Event) => {
 }
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .table-select {
     width: 100%;
@@ -40,11 +39,11 @@ const handleChange = (event: Event) => {
     font-size: var(--font-sm);
     background: var(--bg-primary);
     transition: border-color var(--transition-fast);
-}
 
-.table-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-focus);
+    &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-focus);
+    }
 }
 </style>

@@ -23,18 +23,17 @@ const handleAddAccount = () => {
 }
 </script>
 
-<style scoped>
-@import '@/shared/styles/css-variables.css';
+<style lang="scss" scoped>
 
 .uk-button-primary {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--bg-primary);
     padding: var(--spacing-sm);
-}
 
-.uk-button-primary:hover {
-    background-color: var(--primary-hover);
-    color: white;
+    &:hover {
+        background-color: var(--primary-hover);
+        color: var(--bg-primary);
+    }
 }
 
 .uk-heading-small {
