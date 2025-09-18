@@ -1,152 +1,131 @@
 <template>
     <div class="accounts-list">
-        <div class="uk-flex uk-flex-between uk-flex-middle uk-margin-bottom">
-            <h2 class="uk-heading-small uk-margin-remove">Учётные записи</h2>
-            <button
-                class="uk-button uk-button-primary uk-button-small"
-                title="Добавить учетную запись"
-            >
-                <span uk-icon="plus"></span>
-            </button>
-        </div>
+        <AccountsHeader @add-account="handleAddAccount" />
 
-        <div class="uk-alert uk-alert-info uk-margin-bottom">
-            <p class="uk-margin-remove">
-                <strong>Подсказка:</strong> Для указания нескольких меток для одной пары логин/пароль используйте
-                разделитель ;
-            </p>
-        </div>
+        <AccountsHint />
 
-   
-        <div
-            class="accounts-table-container"
-        >
-            <table class="accounts-table">
-                <thead>
-                    <tr>
-                        <th class="width-30">Метки</th>
-                        <th class="width-20">Тип записи</th>
-                        <th class="width-20">Логин</th>
-                        <th class="width-20">Пароль</th>
-                        <th class="actions-column"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        class="account-row"
-                    >
-                        <td class="tags-cell">
-                            <input
-                                class="uk-input table-input"
-                                type="text"
-                                maxlength="50"
-                                placeholder="Значение"
-                            />
-                        </td>
-                        <td class="type-cell">
-                            <select
-                                class="uk-select table-select"
-                            >
-                            </select>
-                        </td>
-                        <td
-                        >
-                            <input
-                                class="uk-input table-input"
-                                type="text"
-                                maxlength="100"
-                                placeholder="Значение"
-                            />
-                        </td>
-                        <td
-                            class="password-cell"
-                        >
-                            <div class="password-input-container">
-                                <input
-                                    class="uk-input table-input password-input"
-                                    maxlength="100"
-                                    placeholder="Значение"
-                                />
-                                <button
-                                    type="button"
-                                    class="password-toggle"
-                                >
-                                  
-                                    <span
-                                        uk-icon="eye"
-                                    ></span>
-                                </button>
-                            </div>
-                        </td>
-                        <td class="actions-cell">
-                            <button
-                                type="button"
-                                class="delete-button"
-                                title="Удалить учетную запись"
-                            >
-                                <span uk-icon="trash"></span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <EmptyState v-if="accounts.length === 0" />
 
+        <AccountsTable
+            v-else
+            :accounts="accounts"
+            :password-visibility="passwordVisibility"
+            @labels-change="handleLabelsChange"
+            @type-change="handleTypeChange"
+            @login-change="handleLoginChange"
+            @password-change="handlePasswordChange"
+            @delete-account="handleDeleteAccount"
+            @toggle-password-visibility="handleTogglePasswordVisibility"
+        />
+
+        <AccountsStats
+            v-if="accounts.length > 0"
+            :accounts-count="accountsCount"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useAccountsStore } from '@/shared/stores/accounts'
+import { type Account, AccountType } from '@/entities/account/types'
+import { AccountsHeader, AccountsHint, EmptyState, AccountsTable, AccountsStats } from './components'
+
+const accountsStore = useAccountsStore()
 
 const passwordVisibility = ref<Record<string, boolean>>({})
 
+const accounts = computed(() => accountsStore.accounts)
+const accountsCount = computed(() => accountsStore.accountsCount)
 
+const updateAccount = (accountId: string, field: keyof Account, value: any) => {
+    const account = accounts.value.find((acc: Account) => acc.id === accountId)
+    if (!account) return
+
+    const updatedAccount = { ...account, [field]: value }
+    accountsStore.updateAccount(accountId, updatedAccount)
+}
+
+const handleAddAccount = () => {
+    accountsStore.addAccount()
+}
+
+const handleDeleteAccount = (accountId: string) => {
+    accountsStore.removeAccount(accountId)
+    delete passwordVisibility.value[accountId]
+}
+
+const handleLabelsChange = (accountId: string, value: string) => {
+    const labels = accountsStore.parseLabels(value)
+    updateAccount(accountId, 'labels', labels)
+}
+
+const handleTypeChange = (accountId: string, value: string) => {
+    updateAccount(accountId, 'type', value as AccountType)
+    if (value === 'LDAP') {
+        updateAccount(accountId, 'password', null)
+    }
+}
+
+const handleLoginChange = (accountId: string, value: string) => {
+    updateAccount(accountId, 'login', value)
+}
+
+const handlePasswordChange = (accountId: string, value: string) => {
+    updateAccount(accountId, 'password', value)
+}
+
+const handleTogglePasswordVisibility = (accountId: string) => {
+    passwordVisibility.value[accountId] = !passwordVisibility.value[accountId]
+}
 </script>
 
 <style scoped>
+@import '@/shared/styles/css-variables.css';
+
 .accounts-list {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0.75rem;
+    padding: var(--spacing-lg);
 }
 
 .uk-button-primary {
-    background-color: #1e87f0;
+    background-color: var(--primary-color);
     color: white;
-    padding: 0.5rem;
+    padding: var(--spacing-sm);
 }
 
 .uk-button-primary:hover {
-    background-color: #0f7ae5;
+    background-color: var(--primary-hover);
     color: white;
 }
 
 .uk-alert-info {
-    background-color: #e8f4fd;
-    border-left: 4px solid #1e87f0;
-    color: #1e87f0;
-    font-size: 0.875rem;
-    padding: 0.75rem;
+    background-color: var(--bg-info);
+    border-left: 4px solid var(--border-info);
+    color: var(--primary-color);
+    font-size: var(--font-sm);
+    padding: var(--spacing-lg);
 }
 
 .uk-heading-small {
-    color: #333;
-    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-size: var(--font-lg);
     font-weight: 600;
 }
 
 .uk-text-muted {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
 }
 
 .uk-text-small {
-    font-size: 0.8rem;
+    font-size: var(--font-xs);
 }
 
 .accounts-table-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-light);
     overflow: hidden;
 }
 
@@ -157,26 +136,26 @@ const passwordVisibility = ref<Record<string, boolean>>({})
 }
 
 .accounts-table thead {
-    background-color: #f8f9fa;
+    background-color: var(--bg-secondary);
 }
 
 .accounts-table th {
     padding: 12px 16px;
     text-align: left;
     font-weight: 600;
-    color: #333;
-    border-bottom: 2px solid #e9ecef;
-    font-size: 0.875rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-medium);
+    font-size: var(--font-sm);
 }
 
 .accounts-table td {
     padding: 8px 16px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-medium);
     vertical-align: middle;
 }
 
 .account-row:hover {
-    background-color: #f8f9fa;
+    background-color: var(--bg-secondary);
 }
 
 .width-30 {
@@ -195,23 +174,23 @@ const passwordVisibility = ref<Record<string, boolean>>({})
 .table-input,
 .table-select {
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
     padding: 8px 12px;
-    font-size: 0.875rem;
-    background: white;
-    transition: border-color 0.2s ease;
+    font-size: var(--font-sm);
+    background: var(--bg-primary);
+    transition: border-color var(--transition-fast);
 }
 
 .table-input:focus,
 .table-select:focus {
     outline: none;
-    border-color: #1e87f0;
-    box-shadow: 0 0 0 2px rgba(30, 135, 240, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-focus);
 }
 
 .table-input::placeholder {
-    color: #999;
+    color: var(--text-muted);
 }
 
 .password-input-container {
@@ -233,16 +212,16 @@ const passwordVisibility = ref<Record<string, boolean>>({})
     border: none;
     cursor: pointer;
     padding: 4px;
-    color: #666;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    transition: color 0.2s ease;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
 }
 
 .password-toggle:hover {
-    color: #1e87f0;
+    color: var(--primary-color);
 }
 
 .delete-button {
@@ -250,17 +229,17 @@ const passwordVisibility = ref<Record<string, boolean>>({})
     border: none;
     cursor: pointer;
     padding: 8px;
-    color: #dc3545;
-    border-radius: 4px;
-    transition: all 0.2s ease;
+    color: var(--danger-color);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .delete-button:hover {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: var(--danger-bg);
+    color: var(--danger-hover);
 }
 
 @media (max-width: 768px) {
@@ -274,7 +253,7 @@ const passwordVisibility = ref<Record<string, boolean>>({})
 
     .table-input,
     .table-select {
-        font-size: 0.8rem;
+        font-size: var(--font-xs);
         padding: 6px 10px;
     }
 }
