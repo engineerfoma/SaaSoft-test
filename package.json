@@ -1,0 +1,26 @@
+{
+  "name": "saaSoft-test",
+  "version": "1.0.0",
+  "description": "SaaSoft test assignment",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "uikit": "^3.17.11",
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/uikit": "^3.17.0",
+    "@vitejs/plugin-vue": "^4.5.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vue-tsc": "^3.0.7"
+  }
+}
