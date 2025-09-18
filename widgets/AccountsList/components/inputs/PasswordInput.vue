@@ -57,7 +57,6 @@ const handleBlur = () => {
 </script>
 
 <style lang="scss" scoped>
-
 .table-input {
     width: 100%;
     border: 1px solid var(--border-light);

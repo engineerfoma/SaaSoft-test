@@ -7,9 +7,9 @@
             <div class="account-fields">
                 <div class="field-container tags-field">
                     <LabelsInput
-                        :value="getAccountLabels(account)"
-                        @input="value => handleLabelsChange(account.id, value)"
-                        @blur="() => handleFieldBlur(account.id, 'labels')"
+                        :value="localValues.labels"
+                        @input="value => localValues.labels = value"
+                        @blur="() => handleLabelsBlur(account.id)"
                     />
                 </div>
                 <div class="field-container type-field">
@@ -24,10 +24,10 @@
                         :class="{ 'ldap-mode': getAccountType(account) === AccountType.LDAP }"
                     >
                         <LoginInput
-                            :value="getAccountLogin(account)"
+                            :value="localValues.login"
                             :has-error="hasFieldError(account.id, 'login')"
-                            @input="value => handleLoginChange(account.id, value)"
-                            @blur="() => handleFieldBlur(account.id, 'login')"
+                            @input="value => localValues.login = value"
+                            @blur="() => handleLoginBlur(account.id)"
                         />
                     </div>
                     <div
@@ -35,11 +35,11 @@
                         class="password-field"
                     >
                         <PasswordInput
-                            :value="getAccountPassword(account)"
+                            :value="localValues.password"
                             :is-visible="isPasswordVisible"
                             :has-error="hasFieldError(account.id, 'password')"
-                            @input="value => handlePasswordChange(account.id, value)"
-                            @blur="() => handleFieldBlur(account.id, 'password')"
+                            @input="value => localValues.password = value"
+                            @blur="() => handlePasswordBlur(account.id)"
                             @toggle-visibility="togglePasswordVisibility"
                         />
                     </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { reactive, computed } from 'vue'
 import { type Account, AccountType } from '@/entities/account/types'
 import { useAccountsStore } from '@/shared/stores/accounts'
 import { LabelsInput, TypeSelect, LoginInput, PasswordInput } from './inputs'
@@ -83,47 +84,65 @@ const emit = defineEmits<Emits>()
 
 const accountsStore = useAccountsStore()
 
-const getAccountLabels = (account: Account) => {
-    return accountsStore.stringifyLabels(account.labels)
-}
+const localValues = reactive({
+    labels: accountsStore.stringifyLabels(props.account.labels),
+    login: props.account.login,
+    password: props.account.password || ''
+})
 
 const getAccountType = (account: Account) => {
     return account.type
-}
-
-const getAccountLogin = (account: Account) => {
-    return account.login
-}
-
-const getAccountPassword = (account: Account) => {
-    return account.password || ''
 }
 
 const hasFieldError = (accountId: string, field: string) => {
     return accountsStore.hasFieldError(accountId, field)
 }
 
-const handleLabelsChange = (accountId: string, value: string) => {
-    emit('labels-change', accountId, value)
+const handleLabelsBlur = (accountId: string) => {
+    accountsStore.parseLabels(localValues.labels)
+    emit('labels-change', accountId, localValues.labels)
 }
 
 const handleTypeChange = (accountId: string, value: string) => {
     emit('type-change', accountId, value)
-    // Валидация при изменении селекта
+    
+    if (value === 'LDAP') {
+        localValues.password = ''
+        emit('password-change', accountId, '')
+    }
+    
     accountsStore.validateAccountField(accountId, 'type')
 }
 
-const handleLoginChange = (accountId: string, value: string) => {
-    emit('login-change', accountId, value)
+const handleLoginBlur = (accountId: string) => {
+    const tempAccount = { ...props.account, login: localValues.login }
+    const errors = accountsStore.validateAccount(tempAccount)
+
+    if (errors.login) {
+        localValues.login = ''
+        emit('login-change', accountId, '')
+        accountsStore.validateAccountField(accountId, 'login')
+    } else {
+        emit('login-change', accountId, localValues.login)
+        if (accountsStore.hasFieldError(accountId, 'login')) {
+            accountsStore.clearValidationErrors(accountId)
+        }
+    }
 }
 
-const handlePasswordChange = (accountId: string, value: string) => {
-    emit('password-change', accountId, value)
-}
+const handlePasswordBlur = (accountId: string) => {
+    const tempAccount = { ...props.account, password: localValues.password }
+    const errors = accountsStore.validateAccount(tempAccount)
 
-const handleFieldBlur = (accountId: string, field: string) => {
-    if (field === 'login' || field === 'password') {
-        accountsStore.validateAccountField(accountId, field as keyof Account)
+    if (errors.password) {
+        localValues.password = ''
+        emit('password-change', accountId, '')
+        accountsStore.validateAccountField(accountId, 'password')
+    } else {
+        emit('password-change', accountId, localValues.password)
+        if (accountsStore.hasFieldError(accountId, 'password')) {
+            accountsStore.clearValidationErrors(accountId)
+        }
     }
 }
 
@@ -137,7 +156,6 @@ const togglePasswordVisibility = () => {
 </script>
 
 <style lang="scss" scoped>
-
 .account-row {
     &:hover {
         background-color: var(--bg-secondary);

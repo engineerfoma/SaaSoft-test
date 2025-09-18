@@ -70,16 +70,16 @@ export const useAccountsStore = defineStore('accounts', () => {
         const errors: Record<string, string> = {}
 
         if (!account.login.trim()) {
-            errors.login = 'Логин обязателен'
+            errors.login = 'required'
         } else if (account.login.length > 100) {
-            errors.login = 'Логин не должен превышать 100 символов'
+            errors.login = 'too_long'
         }
 
         if (account.type === AccountType.LOCAL) {
             if (!account.password || !account.password.trim()) {
-                errors.password = 'Пароль обязателен для локальных аккаунтов'
+                errors.password = 'required'
             } else if (account.password.length > 100) {
-                errors.password = 'Пароль не должен превышать 100 символов'
+                errors.password = 'too_long'
             }
         }
 
